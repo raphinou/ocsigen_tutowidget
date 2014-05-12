@@ -9,7 +9,7 @@ module Ex_app =
 
 {client{
   (* Create a reference holding a function that will be called on the click *)
-  let close_last = ref (fun () -> () )
+  let close_last = ref (fun c -> () )
   let switch_visibility elt =
     let elt = To_dom.of_element elt in
       if Js.to_bool (elt##classList##contains(Js.string "hidden")) then
@@ -36,8 +36,8 @@ module Ex_app =
                  (* call function found in reference, and change it so it toggles the element we will change now back to its original state
                     the problem though is that we cannot hide the open widget, as clicking it will reopen it immediately as we switch its
                     visibility 2 times *)
-                 !close_last ();
-                 close_last:=(fun() -> switch_visibility %content);
+                 !close_last %content;
+                 close_last:=(fun c -> switch_visibility %content);
                  switch_visibility %content; Lwt.return () )
       )
     ) }}
