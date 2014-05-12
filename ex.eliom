@@ -17,7 +17,8 @@ module Ex_app =
 
 }}
 
-  (* mywidget is now server side *)
+{shared{
+  (* mywidget is now available both server and client side *)
   let mywidget s1 s2 =
     let button  = div ~a:[a_class ["button"]] [pcdata s1] in
     let content = div ~a:[a_class ["content"]] [pcdata s2] in
@@ -34,7 +35,7 @@ module Ex_app =
     ) }}
     in
     div ~a:[a_class ["mywidget"]] [button; content]
-
+}}
 
 let _ =
   Ex_app.register_service ~path:[] ~get_params:Eliom_parameter.unit
