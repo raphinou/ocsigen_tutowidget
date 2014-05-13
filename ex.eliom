@@ -9,13 +9,34 @@ module Ex_app =
 
 {client{
   (* Create a reference holding a function that will be called on the click *)
-  let close_last = ref (fun c -> () )
-  let switch_visibility elt =
+  let close_last = ref (fun (c:Html5_types.div Eliom_content.Html5.D.elt) -> () )
+
+  let hide (elt:Html5_types.div Eliom_content.Html5.D.elt) = 
+    let elt = To_dom.of_element elt in
+      if Js.to_bool (elt##classList##contains(Js.string "hidden")) then
+        ()
+      else
+        elt##classList##add(Js.string "hidden")
+
+  let show elt = 
     let elt = To_dom.of_element elt in
       if Js.to_bool (elt##classList##contains(Js.string "hidden")) then
         elt##classList##remove(Js.string "hidden")
       else
-        elt##classList##add(Js.string "hidden")
+        ()
+
+  let switch_visibility (elt:Html5_types.div Eliom_content.Html5.D.elt) =
+    let elt = To_dom.of_element elt in
+      if Js.to_bool (elt##classList##contains(Js.string "hidden")) then
+        begin
+          Firebug.console##log("removing hidden");
+          elt##classList##remove(Js.string "hidden")
+        end
+      else
+        begin
+          Firebug.console##log("adding hidden");
+          elt##classList##add(Js.string "hidden")
+        end
 
 }}
 
@@ -37,7 +58,9 @@ module Ex_app =
                     the problem though is that we cannot hide the open widget, as clicking it will reopen it immediately as we switch its
                     visibility 2 times *)
                  !close_last %content;
-                 close_last:=(fun c -> switch_visibility %content);
+                 (* close_last should only hide elements, not show, so use the hide function *)
+                 close_last:=(fun c -> if (c == %content) then Firebug.console##log("nothing in ref fun")  else (Firebug.console##log("switching in ref fun"); hide %content) );
+                 Firebug.console##log("switching clicked");
                  switch_visibility %content; Lwt.return () )
       )
     ) }}
